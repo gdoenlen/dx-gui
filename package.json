@@ -1,5 +1,5 @@
 {
-  "name": "sfdx-mgr",
+  "name": "dx-gui",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -29,6 +29,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "electron": "^3.0.10"
+    "electron": "^3.0.10",
+    "eslint": "^5.10.0"
   }
 }
