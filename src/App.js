@@ -1,31 +1,11 @@
 import React, { Component } from 'react';
-import { RouterMixin } from 'react-mini-router';
 import './App.css';
+import Auth from './components/auth';
 
-const App = React.createClass({
-  mixins: [RouterMixin],
-  routes: {
-    '/': 'about',
-    '/about': 'about',
-    '/settings': 'settings',
-    '/auth': 'auth',
-    '/scratch': 'scratch'
-  },
-  render: () => {
-    return this.renderCurrentRoute();
-  },
-  about: () => {
-
-  },
-  settings: () => {
-
-  },
-  auth: () => {
-
-  },
-  scratch: () => {
-
+export default class App extends Component {
+  render() {
+    return (
+      <Auth/>
+    );
   }
-});
-
-export default App;
+}

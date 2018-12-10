@@ -5,6 +5,7 @@
   "dependencies": {
     "@salesforce-ux/design-system": "^2.7.5",
     "@salesforce/design-system-react": "^0.9.1",
+    "create-react-class": "^15.6.3",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-mini-router": "^2.2.1",
@@ -29,7 +30,6 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "electron": "^3.0.10",
-    "eslint": "^5.10.0"
+    "electron": "^3.0.10"
   }
 }
