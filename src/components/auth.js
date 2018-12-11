@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import Header from './header';
 import {
   Button,
   ButtonGroup,
@@ -8,8 +7,7 @@ import {
   DataTableRowActions,
   Dropdown,
   PageHeader,
-  Modal,
-  Spinner
+  Modal
 } from '@salesforce/design-system-react';
 import sfdx from '../services/sfdx';
 
@@ -38,8 +36,10 @@ export default class Auth extends Component {
       this.setState({
         auths: result.result.nonScratchOrgs
       });
+      console.log('toggling');
+      this.props.toggleLoading();
     } catch (err) {
-      console.log('error caught');
+      console.log(err);
     }
   }
 
@@ -60,7 +60,7 @@ export default class Auth extends Component {
    */
   async saveAuth(alias) {
     try {
-      const result = await sfdx.newAuth(alias);
+      //const result = await sfdx.newAuth(alias);
     } catch (err) {
       //todo
     }
@@ -95,41 +95,31 @@ export default class Auth extends Component {
       </div>
     );
 
-    let mainContent;
-    if (this.state.auths.length) {
-      mainContent = (
-        <DataTable items={this.state.auths}>
-          <DataTableColumn label="Alias" property="alias"/>
-          <DataTableColumn label="Username" property="username"/>
-          <DataTableColumn label="Org Id" property="orgId"/>
-          <DataTableColumn label="Connected Status" property="connectedStatus"/>
-          <DataTableRowActions options={[
-              {
-                id: 0, 
-                label: 'Delete',
-                value: 'delete'
-              },
-              {
-                id: 1,
-                label: 'Set Alias',
-                value: 'alias'
-              }
-            ]}
-            dropdown={<Dropdown length="5" iconCategory="utility" iconName="down"/>}
-            onAction={(item, action) => console.log(item, action)}
-          />
-        </DataTable>
-      );
-    } else {
-      mainContent = (<Spinner size="large" variant="brand"/>);
-    }
-
     return (
       <React.Fragment>
-        <Header/>
         <PageHeader label="Orgs" title="Auths" info={this.state.auths.length === 0 ? '#' : this.state.auths.length.toString()} variant="objectHome" navRight={navRight}/>
         <div>
-          {mainContent}
+          <DataTable items={this.state.auths}>
+            <DataTableColumn label="Alias" property="alias"/>
+            <DataTableColumn label="Username" property="username"/>
+            <DataTableColumn label="Org Id" property="orgId"/>
+            <DataTableColumn label="Connected Status" property="connectedStatus"/>
+            <DataTableRowActions options={[
+                {
+                  id: 0, 
+                  label: 'Delete',
+                  value: 'delete'
+                },
+                {
+                  id: 1,
+                  label: 'Set Alias',
+                  value: 'alias'
+                }
+              ]}
+              dropdown={<Dropdown length="5" iconCategory="utility" iconName="down"/>}
+              onAction={(item, action) => console.log(item, action)}
+           />
+          </DataTable>
         </div>
       </React.Fragment>
     );
