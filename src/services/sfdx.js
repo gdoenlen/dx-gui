@@ -1,4 +1,5 @@
 //this only works when running from electron!!
+//todo polyfill this some how so we can work on the ui without electron
 const exec = window.require('child_process').exec;
 
 /**
