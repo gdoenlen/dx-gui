@@ -83,11 +83,11 @@ export default class Auth extends Component {
         >
           <section className="slds-p-around_large">
             <div className="slds-form-element slds-m-bottom_large">
-              <label className="slds-form-element_label" htmlFor="alias">
+              <label className="slds-form-element_label" htmlFor="alias" for="alias">
                 Alias
               </label>
               <div className="slds-form-element_control">
-                <input id="alias" className="-input" type="text" onChange={this.aliasChange}/>
+                <input id="alias" className="slds-input" type="text" onChange={this.aliasChange} placeholder="Optional"/>
               </div>
             </div>
           </section>
