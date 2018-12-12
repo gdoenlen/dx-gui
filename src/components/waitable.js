@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Spinner } from '@salesforce/design-system-react';
+import pubsub from '../services/pubsub';
 
 export default class Waitable extends Component {
 
@@ -8,17 +9,14 @@ export default class Waitable extends Component {
     this.state = {
       loading: true
     };
-  }
-
-  toggleLoading() {
-    this.setState(state => ({ loading: !state.loading }));
+    pubsub.subscribe('loading', (data) => this.setState({ loading: data }));
   }
 
   render() {
     return (
       <React.Fragment>
         <Spinner size="large" variant="brand" containerClassName={this.state.loading === true ? 'slds-visible' : 'slds-hidden' }/>
-        {React.cloneElement(this.props.children, { toggleLoading: this.toggleLoading.bind(this) })}
+        {this.props.children}
       </React.Fragment>
     );
   }

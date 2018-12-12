@@ -10,6 +10,7 @@ import {
   Modal
 } from '@salesforce/design-system-react';
 import sfdx from '../services/sfdx';
+import pubsub from '../services/pubsub';
 
 /**
  * Authorization panel component
@@ -30,8 +31,9 @@ export default class Auth extends Component {
   }
 
   async componentDidMount() {
+    pubsub.publish('loading', true);
     await this.getOrgs();
-    this.props.toggleLoading();
+    pubsub.publish('loading', false);
   }
 
   async getOrgs() {
@@ -60,9 +62,9 @@ export default class Auth extends Component {
   async saveAuth(alias) {
     const res = await sfdx.newAuth(alias);
     if (res.status === 0) {
-      this.props.toggleLoading();
+      pubsub.publish('loading', true);
       this.setState({ modalOpen: false });
-      this.getOrgs().then(() => this.props.toggleLoading());
+      this.getOrgs().then(() => pubsub.publish('loading', false));
     }
   }
 

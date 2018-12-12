@@ -3,7 +3,9 @@ import './App.css';
 import Auth from './components/auth';
 import Waitable from './components/waitable';
 import Header from './components/header';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route } from 'react-router-dom';
+import Scratch from './components/scratch';
+
 export default class App extends Component {
   render() {
     return (
@@ -12,7 +14,9 @@ export default class App extends Component {
           <div>
             <Header />
             <Waitable>
-              <Auth />        
+              <Route exact path="/" component={() => <Auth />}/>        
+              <Route path="/auth" component={() => <Auth />}/>
+              <Route path="/scratch" component={() => <Scratch />} />
             </Waitable>
           </div>
         </BrowserRouter>

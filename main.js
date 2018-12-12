@@ -17,7 +17,7 @@ function getLoadUrl() {
     pathname: path.join(__dirname, '/../build/index.html'),
     protocol: 'file:',
     slashes: true
-  }) : 'http://localhost:3000';
+  }) : 'http://localhost:3000/';
 }
 
 app.on('ready', init);

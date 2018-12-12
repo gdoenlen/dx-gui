@@ -5,7 +5,7 @@ const exec = window.require('child_process').exec;
 /**
  * Service to interact with the native sfdx binary.
  */
-class SfdxService {
+export class SfdxService {
   
   /**
    * Creates a new service
