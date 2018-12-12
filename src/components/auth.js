@@ -30,17 +30,16 @@ export default class Auth extends Component {
   }
 
   async componentDidMount() {
-    try {
-      const result = await sfdx.getOrgs();
-      result.result.nonScratchOrgs.forEach((org, i) => org.id = i.toString());
-      this.setState({
-        auths: result.result.nonScratchOrgs
-      });
-      console.log('toggling');
-      this.props.toggleLoading();
-    } catch (err) {
-      console.log(err);
-    }
+    await this.getOrgs();
+    this.props.toggleLoading();
+  }
+
+  async getOrgs() {
+    const res = await sfdx.getOrgs();
+    res.result.nonScratchOrgs.forEach((org, i) => org.id = i.toString());
+    this.setState({
+      auths: res.result.nonScratchOrgs
+    });
   }
 
   /**
@@ -48,29 +47,50 @@ export default class Auth extends Component {
    * @param {event} event 
    */
   aliasChange(event) {
-    this.setState(state => {
-      state.form.alias = event.currentTarget.value;
-      return state;
+    this.setState({
+      form: {
+        alias: event.currentTarget.value
+      }
     });
   }
-
   /**
    * Saves a new authorization
    * @param {string} alias - the alias you want the new authorization set to
    */
   async saveAuth(alias) {
-    try {
-      //const result = await sfdx.newAuth(alias);
-    } catch (err) {
-      //todo
+    const res = await sfdx.newAuth(alias);
+    if (res.status === 0) {
+      this.props.toggleLoading();
+      this.setState({ modalOpen: false });
+      this.getOrgs().then(() => this.props.toggleLoading());
     }
+  }
+
+  async handleRowAction(item, action) {
+    switch (action.value) {
+      case 'delete': this.delete(item.username); break;
+      default: throw new Error('No case for this action');
+    }
+  }
+
+  /**
+   * Deletes an authorization from sfdx
+   * 
+   * @param {string} username 
+   * @returns {promise}
+   */
+  async delete(username) {
+    const res = await sfdx.logout(username);
+    this.setState(state => 
+      ({ auths: state.auths.filter(auth => auth.username !== res.result[0])})
+    );
   }
 
   render() {
     const navRight = (
       <div>
         <ButtonGroup>
-          <Button variant="brand" label="New" onClick={() => this.setState({ modalOpen: true })}/>
+          <Button variant="brand" label="New" onClick={() => this.setState({ modalOpen: true, edit: {} })}/>
         </ButtonGroup>
         <Modal 
           isOpen={this.state.modalOpen} 
@@ -83,7 +103,7 @@ export default class Auth extends Component {
         >
           <section className="slds-p-around_large">
             <div className="slds-form-element slds-m-bottom_large">
-              <label className="slds-form-element_label" htmlFor="alias" for="alias">
+              <label className="slds-form-element_label" htmlFor="alias">
                 Alias
               </label>
               <div className="slds-form-element_control">
@@ -109,15 +129,10 @@ export default class Auth extends Component {
                   id: 0, 
                   label: 'Delete',
                   value: 'delete'
-                },
-                {
-                  id: 1,
-                  label: 'Set Alias',
-                  value: 'alias'
                 }
               ]}
               dropdown={<Dropdown length="5" iconCategory="utility" iconName="down"/>}
-              onAction={(item, action) => console.log(item, action)}
+              onAction={(item, action) => this.handleRowAction(item, action)}
            />
           </DataTable>
         </div>

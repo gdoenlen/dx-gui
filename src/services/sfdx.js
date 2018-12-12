@@ -38,6 +38,25 @@ class SfdxService {
   async getOrgs() {
     return this._exec('sfdx force:org:list --json');
   }
+
+  /**
+   * Sets an alias on an org
+   * @param {string} username - username of the org you want to set
+   * @param {string} alias - the alias to associate with this username
+   * @returns {promise}
+   */
+  async setAlias(username, alias) {
+    return this._exec(`sfdx force:alias:set ${alias}=${username}`);
+  }
+
+  /**
+   * Logs out a username from sfdx via foce:auth:logout
+   * @param {string} username - the username to logout
+   * @returns {promise}
+   */
+  async logout(username) {
+    return this._exec(`sfdx force:auth:logout -p -u ${username} --json`);
+  }
   
   /**
    * Executes a shell command 
