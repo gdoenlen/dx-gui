@@ -5,7 +5,7 @@ const path = require('path');
 let win;
 
 function init() {
-  win = new BrowserWindow({ width: 400, height: 200 });
+  win = new BrowserWindow({ width: 600, height: 400 });
   win.loadURL(getLoadUrl());
   win.on('closed', () => {
     win = null;
@@ -33,3 +33,6 @@ app.on('activate', () => {
     init();
   }
 });
+
+//starting in version 45 all --json output, including err will go to stdout
+process.env.SFDX_JSON_TO_STDOUT = true;

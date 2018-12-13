@@ -5,6 +5,7 @@ import Waitable from './components/waitable';
 import Header from './components/header';
 import { BrowserRouter, Route } from 'react-router-dom';
 import Scratch from './components/scratch';
+import { GlobalErrModal } from './components/globalerrmodal';
 
 export default class App extends Component {
   render() {
@@ -13,6 +14,7 @@ export default class App extends Component {
         <BrowserRouter>
           <div>
             <Header />
+            <GlobalErrModal />
             <Waitable>
               <Route exact path="/" component={() => <Auth />}/>        
               <Route path="/auth" component={() => <Auth />}/>

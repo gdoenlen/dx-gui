@@ -36,7 +36,7 @@ export class SfdxService {
    * @returns {promise}
    */
   async getOrgs() {
-    return this._exec('sfdx force:org:list --json');
+    return this._exec('sfdx force:org:list --json --all');
   }
 
   /**
@@ -57,19 +57,33 @@ export class SfdxService {
   async logout(username) {
     return this._exec(`sfdx force:auth:logout -p -u ${username} --json`);
   }
+
+  /**
+   * Opens a specific scratch org
+   * @param {string} username - username of the org we want to open
+   * @returns {promise}
+   */
+  async openOrg(username) {
+    return this._exec(`sfdx force:org:open -u ${username} --json`);
+  }
   
   /**
-   * Executes a shell command 
+   * Executes a shell command, all commands executed here
+   * are expected to use the --json flag for json output.
+   * When using --json all output is sent to stdout even on err.
+   * 
    * @param {string} cmd - shell command to execute
    * @returns {promise}
    */
   async _exec(cmd) {
     return new Promise((resolve, reject) => {
       this.exec(cmd, (err, stdout, stderr) => {
-        if (err) {
-          reject(err);
+        //all --json commands go to stdout, even on err
+        const result = JSON.parse(stdout);
+        if (result.status === 0) {
+          resolve(result);
         } else {
-          resolve(JSON.parse(stdout));
+          reject(result);
         }
       });
     });
