@@ -5,6 +5,22 @@ import React, { Component } from 'react';
  * https://lightningdesignsystem.com/components/file-selector/
  */
 export default class SLDSFileSelector extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      
+    };
+  }
+
+  handleFileSelectorChange(event) {
+    const target = event.currentTarget;
+    this.setState({
+      fileName: target.files[0].path
+    });
+
+    this.props.onChange(event);
+  }
+
   render() {
     return (
       <div className="slds-form-element">
@@ -19,7 +35,7 @@ export default class SLDSFileSelector extends Component {
                 type="file"
                 aria-describedby="fileSelectorError"
                 aria-labelledby="fileSelectorLabel"
-                onChange={this.props.onChange}
+                onChange={(e) => this.handleFileSelectorChange(e)}
               />
               <label className="slds-file-selector__body" htmlFor="fileSelector">
                 <span className="slds-file-selector__button slds-button slds-button_neutral">
@@ -29,6 +45,7 @@ export default class SLDSFileSelector extends Component {
             </div>
           </div>
         </div>
+        <div className="slds-form-element__help">{this.state.fileName}</div>
       </div>
     );
   }

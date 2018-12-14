@@ -5,7 +5,7 @@ const path = require('path');
 let win;
 
 function init() {
-  win = new BrowserWindow({ width: 600, height: 400 });
+  win = new BrowserWindow({ width: 800, height: 600 });
   win.loadURL(getLoadUrl());
   win.on('closed', () => {
     win = null;

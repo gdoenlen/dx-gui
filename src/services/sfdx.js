@@ -64,9 +64,33 @@ export class SfdxService {
    * @returns {promise}
    */
   async openOrg(username) {
-    return this._exec(`sfdx force:org:open -u ${username} --json`);
+    const cmd = `sfdx force:org:open -u ${username} --json`;
+    return this._exec(cmd);
+  }
+
+  /**
+   * Deletes a scratch org
+   * @param {string} username - username of the scratch org we want to delete
+   * @returns {promise}
+   */
+  async delete(username) {
+    return this._exec(`sfdx force:org:delete -u ${username} -p --json`);
   }
   
+  /**
+   * Creates a new scratch org 
+   * @param {string} auth - devhub username to create the scratch org with 
+   * @param {string} scratchDef - path to the scratch definition
+   * @param {string} alias - alias for the scratch org, optional 
+   */
+  async newScratch(auth, scratchDef, alias) {
+    let cmd = `sfdx force:org:create -v ${auth} -f ${scratchDef} --json`;
+    if (alias) {
+      cmd += ` -a ${alias}`;
+    } 
+    return this._exec(cmd);
+  }
+
   /**
    * Executes a shell command, all commands executed here
    * are expected to use the --json flag for json output.
@@ -79,7 +103,8 @@ export class SfdxService {
     return new Promise((resolve, reject) => {
       this.exec(cmd, (err, stdout, stderr) => {
         //all --json commands go to stdout, even on err
-        const result = JSON.parse(stdout);
+        const res = stdout === undefined || stdout === '' ? stderr : stdout;
+        const result = JSON.parse(res);
         if (result.status === 0) {
           resolve(result);
         } else {

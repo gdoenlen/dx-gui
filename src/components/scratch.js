@@ -25,7 +25,10 @@ export default class Scratch extends Component {
     pubsub.publish('loading', true);
     const orgs = await this.getOrgs();
     this.setState({
-      orgs: orgs
+      orgs: orgs,
+      form: {
+        orgSelect: orgs.nonScratchOrgs.length > 0 ? orgs.nonScratchOrgs[0].username : undefined
+      }
     });
     pubsub.publish('loading', false);
   }
@@ -50,6 +53,7 @@ export default class Scratch extends Component {
   handleRowAction(item, action) {
     switch (action.value) {
       case 'open': this.open(item.username); break;
+      case 'delete': this.delete(item.username); break;
       default:
     }
   }
@@ -66,6 +70,42 @@ export default class Scratch extends Component {
     }
   }
 
+  async delete(username) {
+    try {
+      const res = await sfdx.delete(username);
+      this.setState(state => {
+        const orgs = state.orgs;
+        orgs.scratchOrgs = orgs.scratchOrgs.filter(org => org.orgId !== res.result.orgId);
+        return {
+          orgs: orgs
+        };
+      });
+    } catch (err) {
+      pubsub.publish('error', err);
+    }
+  }
+
+  /**
+   * Creates a new scratch org from the modal form
+   * @param {object} form 
+   */
+  async saveOrg(form) {
+    try {
+      pubsub.publish('loading', true);
+      await sfdx.newScratch(form.orgSelect, form.scratchDef, form.alias);
+      //the response doesn't provide the info we need for the grid so we have to refresh
+      const res = await this.getOrgs();
+      this.setState({
+        orgs: res,
+        modalOpen: false
+      });
+    } catch (err) {
+      this.setState({ modalOpen: false });
+      pubsub.publish('error', err);
+    }
+    pubsub.publish('loading', false);
+  }
+
   render() {
     const navRight = (
       <React.Fragment>
@@ -75,7 +115,7 @@ export default class Scratch extends Component {
         <Modal isOpen={this.state.modalOpen} title="New Scratch Org" onRequestClose={() => this.setState({ modalOpen: false})}
               footer={[
                 <Button label="Cancel" onClick={() => this.setState({ modalOpen: false })} />,
-                <Button label="Save" onClick={() => alert('todo!')} />
+                <Button label="Save" onClick={() => this.saveOrg(this.state.form)} />
               ]}
         >
           <section>
@@ -90,32 +130,36 @@ export default class Scratch extends Component {
                   }
                   return option;
                 })}
-                onChange={(e) => this.setState(state => {
-                  state.form.orgSelect = e.currentTarget.options.find(option => option.selected);
-                  return {
-                    form: state.form
-                  };
-                })}
+                onChange={(e) => {
+                  const currentTarget = e.currentTarget;
+                  this.setState(state => {
+                    state.form.orgSelect = currentTarget.options.find(option => option.selected).value;
+                    return {
+                      form: state.form
+                    };
+                  });
+                }}
               />
-              <Input label="Alias" onChange={(e) => this.setState(state => {
-                const form = state.form;
-                form.alias = e.currentTarget.value;
-                return {
-                  form: form
-                };
-              })} />
+              <Input label="Alias" onChange={(e) => {
+                const currentTarget = e.currentTarget;
+                this.setState(state => {
+                  const form = state.form;
+                  form.alias = currentTarget.value;
+                  return {
+                    form: form
+                  };
+                });
+              }} />
               <SLDSFileSelector onChange={(e) => {
                 const target = e.currentTarget;  
                 this.setState(state => {
                   const form = state.form;
                   form.scratchDef = target.files[0].path;
-                  console.log(target);
                   return {
                     form: form
                   };
-                })
+                });
               }} />
-              <span className="slds-form-element__help">{this.state.form.scratchDef}</span>
             </div>
           </section>  
         </Modal>
@@ -159,7 +203,7 @@ export default class Scratch extends Component {
                 {
                   id: 3,
                   label: 'Delete',
-                  value: 'Delete'
+                  value: 'delete'
                 }
               ]}
               dropdown={<Dropdown length="5" />}

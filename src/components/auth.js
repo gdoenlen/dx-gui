@@ -60,11 +60,15 @@ export default class Auth extends Component {
    * @param {string} alias - the alias you want the new authorization set to
    */
   async saveAuth(alias) {
-    const res = await sfdx.newAuth(alias);
-    if (res.status === 0) {
-      pubsub.publish('loading', true);
-      this.setState({ modalOpen: false });
-      this.getOrgs().then(() => pubsub.publish('loading', false));
+    try {
+      const res = await sfdx.newAuth(alias);
+      if (res.status === 0) {
+        pubsub.publish('loading', true);
+        this.setState({ modalOpen: false });
+        this.getOrgs().then(() => pubsub.publish('loading', false));
+      }
+    } catch (err) {
+      pubsub.publish('error', err);
     }
   }
 
@@ -82,17 +86,21 @@ export default class Auth extends Component {
    * @returns {promise}
    */
   async delete(username) {
-    const res = await sfdx.logout(username);
-    this.setState(state => 
-      ({ auths: state.auths.filter(auth => auth.username !== res.result[0])})
-    );
+    try {
+      const res = await sfdx.logout(username);
+      this.setState(state => 
+        ({ auths: state.auths.filter(auth => auth.username !== res.result[0])})
+      );
+    } catch (err) {
+      pubsub.publish('error', err);
+    }
   }
 
   render() {
     const navRight = (
       <div>
         <ButtonGroup>
-          <Button variant="brand" label="New" onClick={() => this.setState({ modalOpen: true, edit: {} })}/>
+          <Button variant="brand" label="New" onClick={() => this.setState({ modalOpen: true })}/>
         </ButtonGroup>
         <Modal 
           isOpen={this.state.modalOpen} 
@@ -109,7 +117,7 @@ export default class Auth extends Component {
                 Alias
               </label>
               <div className="slds-form-element_control">
-                <input id="alias" className="slds-input" type="text" onChange={this.aliasChange} placeholder="Optional"/>
+                <input id="alias" className="slds-input" type="text" onChange={(e) => this.aliasChange(e)} placeholder="Optional"/>
               </div>
             </div>
           </section>
