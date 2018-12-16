@@ -20,7 +20,7 @@ export default class Header extends Component {
           </GlobalNavigationBarRegion>
           <GlobalNavigationBarRegion region="secondary">
             <RoutableGlobalNavigationBarLink href="/about" label="About"/>
-            <RoutableGlobalNavigationBarLink href="/auth" label="Auth"/>
+            <RoutableGlobalNavigationBarLink href="/devhubs" label="DevHubs"/>
             <RoutableGlobalNavigationBarLink href="/scratch" label="Scratch Orgs"/>
             <RoutableGlobalNavigationBarLink href="/settings" label="Settings"/>
           </GlobalNavigationBarRegion>

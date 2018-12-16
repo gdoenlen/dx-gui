@@ -1,6 +1,7 @@
 //this only works when running from electron!!
 //todo polyfill this some how so we can work on the ui without electron
 const exec = window.require('child_process').exec;
+const { chdir, cwd } = window.process; 
 
 /**
  * Service to interact with the native sfdx binary.
@@ -10,9 +11,11 @@ export class SfdxService {
   /**
    * Creates a new service
    * @constructor 
-   * @param {function} exec - executes a function against a system binary 
+   * @param {function} exec - executes a function against a system binary
+   * @param {function} chdir - changes the current working directory
+   * @Param {function} cwd - gets the current working directory
    */
-  constructor(exec) {
+  constructor(exec, chdir, cwd) {
     this.exec = exec;
   }
 
@@ -92,9 +95,46 @@ export class SfdxService {
   }
 
   /**
+   * Pushes source to the given org from the given project 
+   * 
+   * @param {string} username - username of the scratch org you want to push to
+   * @param {string} dir - the directory of the project you want to push from 
+   */
+  async pushSource(username, dir) {
+    try {
+      const cwd = this.cwd();
+      this.chdir(dir);
+      return this._exec(`sfdx force:source:push -u ${username} --json`).finally(() => this.chdir(cwd));
+    } catch (err) {
+      //todo probably should wrap the error to look like an sfdx error
+      return new Promise((resolve, reject) => {
+        reject(err);
+      });
+    }    
+  }
+
+  /**
+   * Pulls source from the given scratch org into the given project 
+   * 
+   * @param {string} username - scratch org username that you want to pull from
+   * @param {string} dir - the directory you want to pull into
+   */
+  async pullSource(username, dir) {
+    try {
+      const cwd = this.cwd();
+      this.chdir(dir);
+      return this._exec(`sfdx force:source:pull -u ${username} --json`).finally(() => this.chdir(cwd));
+    } catch (err) {
+      return new Promise((resolve, reject) => {
+        reject(err);
+      });
+    }
+  }
+
+  /**
    * Executes a shell command, all commands executed here
    * are expected to use the --json flag for json output.
-   * When using --json all output is sent to stdout even on err.
+   * When using --json all output is sent to stdout even on err in versions >= 45.
    * 
    * @param {string} cmd - shell command to execute
    * @returns {promise}
@@ -102,7 +142,6 @@ export class SfdxService {
   async _exec(cmd) {
     return new Promise((resolve, reject) => {
       this.exec(cmd, (err, stdout, stderr) => {
-        //all --json commands go to stdout, even on err
         const res = stdout === undefined || stdout === '' ? stderr : stdout;
         const result = JSON.parse(res);
         if (result.status === 0) {
@@ -115,5 +154,5 @@ export class SfdxService {
   }
 }
 
-const sfdx = new SfdxService(exec);
+const sfdx = new SfdxService(exec, chdir, cwd);
 export default sfdx;

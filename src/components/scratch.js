@@ -15,9 +15,8 @@ export default class Scratch extends Component {
         scratchOrgs: []
       },
       modalOpen: false,
-      form: {
-
-      }
+      form: {},
+      modal: {}
     };
   }
 
@@ -54,6 +53,8 @@ export default class Scratch extends Component {
     switch (action.value) {
       case 'open': this.open(item.username); break;
       case 'delete': this.delete(item.username); break;
+      case 'push': this.openPushModal(); break;
+      case 'pull': this.openPullModal(); break;
       default:
     }
   }
@@ -106,18 +107,12 @@ export default class Scratch extends Component {
     pubsub.publish('loading', false);
   }
 
-  render() {
-    const navRight = (
-      <React.Fragment>
-        <ButtonGroup>
-          <Button variant="brand" label="New" onClick={() => this.setState({ modalOpen: true })}/>
-        </ButtonGroup>
-        <Modal isOpen={this.state.modalOpen} title="New Scratch Org" onRequestClose={() => this.setState({ modalOpen: false})}
-              footer={[
-                <Button label="Cancel" onClick={() => this.setState({ modalOpen: false })} />,
-                <Button label="Save" onClick={() => this.saveOrg(this.state.form)} />
-              ]}
-        >
+  openNewScratchModal() {
+    this.setState({
+      modal: {
+        title: "New Scratch Org",
+        onSave: () => this.saveOrg(this.state.form),
+        body: (
           <section>
             <div className="slds-form slds-form_stacked slds-m-around_large">
               <SLDSSelect
@@ -150,21 +145,89 @@ export default class Scratch extends Component {
                   };
                 });
               }} />
-              <SLDSFileSelector onChange={(e) => {
-                const target = e.currentTarget;  
-                this.setState(state => {
-                  const form = state.form;
-                  form.scratchDef = target.files[0].path;
-                  return {
-                    form: form
-                  };
-                });
-              }} />
+              <SLDSFileSelector 
+                onChange={(e) => {
+                  const target = e.currentTarget;  
+                  this.setState(state => {
+                    const form = state.form;
+                    form.scratchDef = target.files[0].path;
+                    return {
+                      form: form
+                    };
+                  });
+                }} 
+                accept="application/json"
+                label="Scratch Definition"
+              />
             </div>
           </section>  
+        )
+      },
+      modalOpen: true
+    });
+  }
+  
+  openPullModal() {
+    this.setState({
+      modalOpen: true,
+      modal: {
+        title: "Pull Source",
+        body: (
+          <section>
+            <div className="slds-form slds-form_stacked slds-m-around_large">
+              <SLDSFileSelector
+                accept="application/json"
+                label="Project Definition"
+                onChange={(e) => {
+
+                }}
+              />
+            </div>
+          </section>
+        ),
+        onSave: () => {}
+      }
+    });
+  }
+
+  openPushModal() {
+    this.setState({
+      modalOpen: true,
+      modal: {
+        title: "Push Source",
+        body: (
+          <section>
+            <div className="slds-form slds-form_stacked slds-m-around_large">
+              <SLDSFileSelector
+                accept="application/json"
+                label="Project definition"
+                onChange={(e) => {}}                
+              />
+            </div>
+          </section>
+        ),
+        onSave: () => {}
+      }
+    });
+  }
+
+  render() {
+    const navRight = (
+      <React.Fragment>
+        <ButtonGroup>
+          <Button variant="brand" label="New" onClick={() => this.openNewScratchModal()}/>
+        </ButtonGroup>
+        <Modal isOpen={this.state.modalOpen} title={this.state.modal.title} onRequestClose={() => this.setState({ modalOpen: false})}
+              footer={[
+                <Button label="Cancel" onClick={() => this.setState({ modalOpen: false })} />,
+                <Button label="Save" onClick={this.state.modal.onSave} />
+              ]}
+        >
+          {this.state.modal.body}
         </Modal>
       </React.Fragment>
     );
+
     return (
       <React.Fragment>
         <PageHeader 

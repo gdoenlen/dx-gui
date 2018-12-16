@@ -104,7 +104,7 @@ export default class Auth extends Component {
         </ButtonGroup>
         <Modal 
           isOpen={this.state.modalOpen} 
-          title="New Auth" 
+          title="New DevHub" 
           onRequestClose={() => this.setState({ modalOpen: false })}
           footer={[
             <Button label="Cancel" onClick={() => this.setState({ modalOpen: false})}/>,
@@ -127,7 +127,7 @@ export default class Auth extends Component {
 
     return (
       <React.Fragment>
-        <PageHeader label="Orgs" title="Auths" info={this.state.auths.length === 0 ? '#' : this.state.auths.length.toString()} variant="objectHome" navRight={navRight}/>
+        <PageHeader label="Orgs" title="DevHubs" info={this.state.auths.length === 0 ? '#' : this.state.auths.length.toString()} variant="objectHome" navRight={navRight}/>
         <div>
           <DataTable items={this.state.auths}>
             <DataTableColumn label="Alias" property="alias"/>

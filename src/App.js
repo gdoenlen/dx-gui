@@ -17,7 +17,7 @@ export default class App extends Component {
             <GlobalErrModal />
             <Waitable>
               <Route exact path="/" component={() => <Auth />}/>        
-              <Route path="/auth" component={() => <Auth />}/>
+              <Route path="/devhubs" component={() => <Auth />}/>
               <Route path="/scratch" component={() => <Scratch />} />
             </Waitable>
           </div>

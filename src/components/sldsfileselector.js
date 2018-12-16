@@ -12,6 +12,12 @@ export default class SLDSFileSelector extends Component {
     };
   }
 
+  /**
+   * Handles what happens when a file is selected. First sets the display value
+   * of the path and then fires the supplied onChange event
+   * 
+   * @param {event} event - the event that triggered this to fire 
+   */
   handleFileSelectorChange(event) {
     const target = event.currentTarget;
     this.setState({
@@ -24,14 +30,14 @@ export default class SLDSFileSelector extends Component {
   render() {
     return (
       <div className="slds-form-element">
-        <span className="slds-form-element__label" id="fileSelectorLabel">Scratch Definition</span>
+        <span className="slds-form-element__label" id="fileSelectorLabel">{this.props.label}</span>
         <div className="slds-form-element__control">
           <div className="slds-file-selector slds-file-selector_files">
             <div className="slds-file-selector__dropzone">
               <input 
                 id="fileSelector"
                 className="slds-file-selector__input slds-assistive-text" 
-                accept="application/json" 
+                accept={this.props.accept} 
                 type="file"
                 aria-describedby="fileSelectorError"
                 aria-labelledby="fileSelectorLabel"
