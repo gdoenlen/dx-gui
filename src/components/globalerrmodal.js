@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Modal, Button } from '@salesforce/design-system-react';
 import pubsub from '../services/pubsub';
 
+/**
+ * Global modal for displaying errors.
+ */
 export default class GlobalErrModal extends Component {
   constructor(props) {
     super(props);

@@ -21,7 +21,7 @@ export default class SLDSFileSelector extends Component {
   handleFileSelectorChange(event) {
     const target = event.currentTarget;
     this.setState({
-      fileName: target.files[0].path
+      filePath: target.files[0].path
     });
 
     this.props.onChange(event);
@@ -36,6 +36,7 @@ export default class SLDSFileSelector extends Component {
             <div className="slds-file-selector__dropzone">
               <input 
                 id="fileSelector"
+                name={this.props.name}
                 className="slds-file-selector__input slds-assistive-text" 
                 accept={this.props.accept} 
                 type="file"
@@ -51,7 +52,7 @@ export default class SLDSFileSelector extends Component {
             </div>
           </div>
         </div>
-        <div className="slds-form-element__help">{this.state.fileName}</div>
+        <div className="slds-form-element__help">{this.props.error}</div>
       </div>
     );
   }

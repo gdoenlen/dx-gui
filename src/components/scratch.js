@@ -4,6 +4,7 @@ import pubsub from '../services/pubsub';
 import { ButtonGroup, Button, Modal, PageHeader, DataTable, DataTableColumn, DataTableRowActions, Dropdown, Input } from '@salesforce/design-system-react';
 import SLDSSelect from './sldsselect';
 import SLDSFileSelector from './sldsfileselector';
+import { Form, Field, Formik } from 'formik';
 
 export default class Scratch extends Component {
 
@@ -171,21 +172,32 @@ export default class Scratch extends Component {
     this.setState({
       modalOpen: true,
       modal: {
-        title: "Pull Source",
+        title: 'Pull Source',
         body: (
-          <section>
-            <div className="slds-form slds-form_stacked slds-m-around_large">
-              <SLDSFileSelector
-                accept="application/json"
-                label="Project Definition"
-                onChange={(e) => {
-
-                }}
-              />
-            </div>
+          <section className="slds-m-around_large">
+            <Formik
+              initialValues={{ projectDef: '' }}
+              validate={ values => {
+                if (!values.projectDef) {
+                  return {
+                    projectDef: 'Required'
+                  };
+                }
+              }}
+            >
+              {() => (
+                <Form id="pull" className="slds-form slds-form_stacked">
+                  <Field name="projectDef">
+                    {({ field, form }) => (
+                      <SLDSFileSelector accept="application/json" label="Project Definition" error={form.errors && form.errors[field.name]}/>
+                    )}
+                  </Field>
+                </Form>
+              )}
+            </Formik>
           </section>
         ),
-        onSave: () => {}
+        form: 'pull'
       }
     });
   }
@@ -220,7 +232,7 @@ export default class Scratch extends Component {
         <Modal isOpen={this.state.modalOpen} title={this.state.modal.title} onRequestClose={() => this.setState({ modalOpen: false})}
               footer={[
                 <Button label="Cancel" onClick={() => this.setState({ modalOpen: false })} />,
-                <Button label="Save" onClick={this.state.modal.onSave} />
+                <Button label="Save" onClick={this.state.modal.onSave} form={this.state.form}/> 
               ]}
         >
           {this.state.modal.body}
