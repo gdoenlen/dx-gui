@@ -4,7 +4,7 @@ import Auth from './components/auth';
 import Waitable from './components/waitable';
 import Header from './components/header';
 import { BrowserRouter, Route } from 'react-router-dom';
-import Scratch from './components/scratch';
+import { Scratch } from './components/scratch';
 import GlobalErrModal from './components/globalerrmodal';
 
 export default class App extends Component {

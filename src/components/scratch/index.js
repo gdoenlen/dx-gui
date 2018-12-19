@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import sfdx from '../services/sfdx';
-import pubsub from '../services/pubsub';
+import sfdx from '../../services/sfdx';
+import pubsub from '../../services/pubsub';
 import { ButtonGroup, Button, Modal, PageHeader, DataTable, DataTableColumn, DataTableRowActions, Dropdown, Input } from '@salesforce/design-system-react';
-import SLDSSelect from './sldsselect';
-import SLDSFileSelector from './sldsfileselector';
-import { Form, Field, Formik } from 'formik';
+import PullPush from './forms/pullpush';
+import NewScratch from './forms/newscratch';
 
-export default class Scratch extends Component {
+export class Scratch extends Component {
 
   constructor(props) {
     super(props);
@@ -16,8 +15,6 @@ export default class Scratch extends Component {
         scratchOrgs: []
       },
       modalOpen: false,
-      form: {},
-      modal: {}
     };
   }
 
@@ -54,8 +51,8 @@ export default class Scratch extends Component {
     switch (action.value) {
       case 'open': this.open(item.username); break;
       case 'delete': this.delete(item.username); break;
-      case 'push': this.openPushModal(); break;
-      case 'pull': this.openPullModal(); break;
+      case 'push': this.openModal((<PullPush id="push" onSubmit={() => alert('todo')} />), 'Push Source', 'push'); break;
+      case 'pull': this.openModal((<PullPush id="pull" onSubmit={() => alert('todo')} />, 'Pull Source', 'pull')); break;
       default:
     }
   }
@@ -108,117 +105,24 @@ export default class Scratch extends Component {
     pubsub.publish('loading', false);
   }
 
-  openNewScratchModal() {
-    this.setState({
-      modal: {
-        title: "New Scratch Org",
-        onSave: () => this.saveOrg(this.state.form),
-        body: (
-          <section>
-            <div className="slds-form slds-form_stacked slds-m-around_large">
-              <SLDSSelect
-                options={this.state.orgs.nonScratchOrgs.map((auth, i) => { 
-                  const option = {
-                    value: auth.username, label: auth.username
-                  }
-                  if (i === 0) {
-                    option.selected = 'selected';
-                  }
-                  return option;
-                })}
-                onChange={(e) => {
-                  const currentTarget = e.currentTarget;
-                  this.setState(state => {
-                    state.form.orgSelect = currentTarget.options.find(option => option.selected).value;
-                    return {
-                      form: state.form
-                    };
-                  });
-                }}
-              />
-              <Input label="Alias" onChange={(e) => {
-                const currentTarget = e.currentTarget;
-                this.setState(state => {
-                  const form = state.form;
-                  form.alias = currentTarget.value;
-                  return {
-                    form: form
-                  };
-                });
-              }} />
-              <SLDSFileSelector 
-                onChange={(e) => {
-                  const target = e.currentTarget;  
-                  this.setState(state => {
-                    const form = state.form;
-                    form.scratchDef = target.files[0].path;
-                    return {
-                      form: form
-                    };
-                  });
-                }} 
-                accept="application/json"
-                label="Scratch Definition"
-              />
-            </div>
-          </section>  
-        )
-      },
-      modalOpen: true
-    });
-  }
-  
-  openPullModal() {
+  /**
+   * Opens the modal with the content supplied
+   * 
+   * @param {component} form - component body for the modal form 
+   * @param {*} title - title of the modal
+   * @param {*} formName - id of the form for the save submit button
+   */
+  openModal(form, title, formName) {
     this.setState({
       modalOpen: true,
       modal: {
-        title: 'Pull Source',
+        title: title,
         body: (
           <section className="slds-m-around_large">
-            <Formik
-              initialValues={{ projectDef: '' }}
-              validate={ values => {
-                if (!values.projectDef) {
-                  return {
-                    projectDef: 'Required'
-                  };
-                }
-              }}
-            >
-              {() => (
-                <Form id="pull" className="slds-form slds-form_stacked">
-                  <Field name="projectDef">
-                    {({ field, form }) => (
-                      <SLDSFileSelector accept="application/json" label="Project Definition" error={form.errors && form.errors[field.name]}/>
-                    )}
-                  </Field>
-                </Form>
-              )}
-            </Formik>
+            {form}
           </section>
         ),
-        form: 'pull'
-      }
-    });
-  }
-
-  openPushModal() {
-    this.setState({
-      modalOpen: true,
-      modal: {
-        title: "Push Source",
-        body: (
-          <section>
-            <div className="slds-form slds-form_stacked slds-m-around_large">
-              <SLDSFileSelector
-                accept="application/json"
-                label="Project definition"
-                onChange={(e) => {}}                
-              />
-            </div>
-          </section>
-        ),
-        onSave: () => {}
+        form: formName
       }
     });
   }
@@ -227,12 +131,16 @@ export default class Scratch extends Component {
     const navRight = (
       <React.Fragment>
         <ButtonGroup>
-          <Button variant="brand" label="New" onClick={() => this.openNewScratchModal()}/>
+          <Button 
+            variant="brand" 
+            label="New"
+            onClick={() => this.openModal((<NewScratch options={this.state.orgs.nonScratchOrgs} />), 'New Scratch Org', 'newScratch')}
+          />
         </ButtonGroup>
         <Modal isOpen={this.state.modalOpen} title={this.state.modal.title} onRequestClose={() => this.setState({ modalOpen: false})}
               footer={[
                 <Button label="Cancel" onClick={() => this.setState({ modalOpen: false })} />,
-                <Button label="Save" onClick={this.state.modal.onSave} form={this.state.form}/> 
+                <Button label="Save" type="submit" form={this.state.form}/> 
               ]}
         >
           {this.state.modal.body}
