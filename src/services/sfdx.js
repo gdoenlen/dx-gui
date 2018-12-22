@@ -17,6 +17,8 @@ export class SfdxService {
    */
   constructor(exec, chdir, cwd) {
     this.exec = exec;
+    this.chdir = chdir;
+    this.cwd = cwd;
   }
 
   /**

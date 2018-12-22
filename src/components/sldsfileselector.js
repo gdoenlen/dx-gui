@@ -20,16 +20,20 @@ export default class SLDSFileSelector extends Component {
    */
   handleFileSelectorChange(event) {
     const target = event.currentTarget;
-    this.setState({
-      filePath: target.files[0].path
-    });
 
-    this.props.onChange(event);
+    //sometimes when you click cancel there won't be a file value
+    if (target.files && target.files[0]) {
+      this.setState({
+        path: target.files[0].path
+      });
+
+      this.props.onChange(event);
+    }
   }
 
   render() {
     return (
-      <div className="slds-form-element">
+      <div className={'slds-form-element' + this.props.error ? ' slds-has-error' : ''}>
         <span className="slds-form-element__label" id="fileSelectorLabel">{this.props.label}</span>
         <div className="slds-form-element__control">
           <div className="slds-file-selector slds-file-selector_files">
@@ -42,17 +46,19 @@ export default class SLDSFileSelector extends Component {
                 type="file"
                 aria-describedby="fileSelectorError"
                 aria-labelledby="fileSelectorLabel"
-                onChange={(e) => this.handleFileSelectorChange(e)}
+                onChange={e => this.handleFileSelectorChange(e)}
+                webkitdirectory={this.props.webkitdirectory}
               />
               <label className="slds-file-selector__body" htmlFor="fileSelector">
                 <span className="slds-file-selector__button slds-button slds-button_neutral">
                   Browse
                 </span>
+                <span className="slds-file-selector__text slds-text-body_small">{this.state.path}</span>
               </label>
             </div>
           </div>
         </div>
-        <div className="slds-form-element__help">{this.props.error}</div>
+        <div className="slds-form-element__help slds-text-color_error">{this.props.error}</div>
       </div>
     );
   }

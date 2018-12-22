@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Formik, Field, Form } from 'formik';
 import SLDSSelect from '../../sldsselect';
-import { Input } from '@salesforce/design-system-react';
+import { Input, Button } from '@salesforce/design-system-react';
 import SLDSFileSelector from '../../sldsfileselector';
 
 export default class NewScratch extends Component {
@@ -10,10 +10,19 @@ export default class NewScratch extends Component {
       <React.Fragment>
         <Formik
           initialValues={{
-
+            auth: this.props.options[0].value
           }}
-          validate={() => {
+          validate={values => {
+            console.log(values);
+            const err = {};
+            if (!values.file) {
+              err.file = 'Required';
+            }
+            if (!values.auth) {
+              err.auth = 'Required';
+            }
 
+            return err;
           }}
           onSubmit={this.props.onSubmit}
         >
@@ -21,12 +30,21 @@ export default class NewScratch extends Component {
             <Form id={this.props.id}>
               <Field name="auth">
                 {({ field, form }) => (
-                  <SLDSSelect options={this.props.options} />
+                  <SLDSSelect 
+                    options={this.props.options}
+                    name={field.name} 
+                    onChange={event => form.setFieldValue(field.name, event.currentTarget.value)}
+                    error={form.errors && form.errors[field.name]}
+                  />
                 )}
               </Field>
               <Field name="alias">
                 {({ field, form }) => (
-                  <Input label="Alias" />
+                  <Input 
+                    label="Alias" 
+                    name={field.name} 
+                    onChange={event => form.setFieldValue(field.name, event.currentTarget.value)}
+                  />
                 )}
               </Field>
               <Field name="file">
@@ -36,9 +54,11 @@ export default class NewScratch extends Component {
                       name={field.name}
                       label="Scratch Definition"
                       error={form.errors && form.errors[field.name]}
+                      onChange={event => form.setFieldValue(field.name,  event.currentTarget.files[0].path)}
                     />  
                   )}
               </Field>
+              <Button type="submit" label="Save" variant="brand" className="slds-m-top_small" />
             </Form>
           )}
         </Formik>

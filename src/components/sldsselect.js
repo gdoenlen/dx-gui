@@ -6,10 +6,11 @@ export default class SLDSSelect extends Component {
       <div className="slds-form-element">
         <label className="slds-form-element__label" htmlFor="orgSelect">Target Auth</label>
         <div className="slds-select_container">
-          <select className="slds-select" required={this.props.required} onChange={this.props.onChange} name="orgSelect">
+          <select className="slds-select" onChange={this.props.onChange} name={this.props.name}>
             {this.props.options.map(option => <option value={option.value}>{option.label}</option>)}
           </select>
         </div>
+        <div className="slds-form-element__help slds-text-color_error">{this.props.error}</div>
       </div>
     );
   }

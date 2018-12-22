@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import sfdx from '../../services/sfdx';
 import pubsub from '../../services/pubsub';
-import { ButtonGroup, Button, Modal, PageHeader, DataTable, DataTableColumn, DataTableRowActions, Dropdown, Input } from '@salesforce/design-system-react';
+import { ButtonGroup, Button, Modal, PageHeader, DataTable, DataTableColumn, DataTableRowActions, Dropdown } from '@salesforce/design-system-react';
 import PullPush from './forms/pullpush';
 import NewScratch from './forms/newscratch';
 
@@ -15,6 +15,9 @@ export class Scratch extends Component {
         scratchOrgs: []
       },
       modalOpen: false,
+      modal: {
+
+      }
     };
   }
 
@@ -22,10 +25,7 @@ export class Scratch extends Component {
     pubsub.publish('loading', true);
     const orgs = await this.getOrgs();
     this.setState({
-      orgs: orgs,
-      form: {
-        orgSelect: orgs.nonScratchOrgs.length > 0 ? orgs.nonScratchOrgs[0].username : undefined
-      }
+      orgs: orgs
     });
     pubsub.publish('loading', false);
   }
@@ -37,7 +37,10 @@ export class Scratch extends Component {
    */
   async getOrgs() {
     const res = await sfdx.getOrgs();
-    res.result.scratchOrgs.forEach((scratch, i) => scratch.id = i.toString());
+    res.result.scratchOrgs.forEach((scratch, i) => {
+      scratch.id = i.toString();
+      scratch.key = scratch.username
+    });
     return res.result;
   }
 
@@ -51,9 +54,41 @@ export class Scratch extends Component {
     switch (action.value) {
       case 'open': this.open(item.username); break;
       case 'delete': this.delete(item.username); break;
-      case 'push': this.openModal((<PullPush id="push" onSubmit={() => alert('todo')} />), 'Push Source', 'push'); break;
-      case 'pull': this.openModal((<PullPush id="pull" onSubmit={() => alert('todo')} />, 'Pull Source', 'pull')); break;
+      case 'push': this.openModal((<PullPush id="push" onSubmit={() => alert('todo')} username={item.username}/>), 'Push Source', 'push'); break;
+      case 'pull': 
+        this.openModal((<PullPush id="pull" onSubmit={values => this.pullSource(values.username, values.projectDef)} username={item.username}/>), 'Pull Source', 'pull'); break;
       default:
+    }
+  }
+
+  async pushSource(username, dir) {
+    pubsub.publish('loading', true);
+    try {
+      const res = await sfdx.pushSource(username, dir);
+      console.log(res);
+    } catch (err) {
+      
+      pubsub.publish('error', err);      
+    } finally {
+      this.setState({
+        modalOpen: false
+      });
+      pubsub.publish('loading', false);
+    }
+  }
+
+  async pullSource(username, dir) {
+    pubsub.publish('loading', true);
+    try {
+      const res = await sfdx.pullSource(username, dir);
+      console.log(res);
+    } catch (err) {
+      pubsub.publish('error', err);
+    } finally {
+      this.setState({
+        modalOpen: false
+      });
+      pubsub.publish('loading', false);
     }
   }
 
@@ -85,13 +120,14 @@ export class Scratch extends Component {
   }
 
   /**
-   * Creates a new scratch org from the modal form
+   * Creates a new scratch org from the modal form.
+   * This is a long action due to the multiple calls that have to be made to sfdx.
    * @param {object} form 
    */
   async saveOrg(form) {
     try {
       pubsub.publish('loading', true);
-      await sfdx.newScratch(form.orgSelect, form.scratchDef, form.alias);
+      await sfdx.newScratch(form.auth, form.file, form.alias);
       //the response doesn't provide the info we need for the grid so we have to refresh
       const res = await this.getOrgs();
       this.setState({
@@ -134,13 +170,17 @@ export class Scratch extends Component {
           <Button 
             variant="brand" 
             label="New"
-            onClick={() => this.openModal((<NewScratch options={this.state.orgs.nonScratchOrgs} />), 'New Scratch Org', 'newScratch')}
+            onClick={() => this.openModal(
+              (<NewScratch 
+                options={this.state.orgs.nonScratchOrgs.map(nso => ({ value: nso.username, label: nso.username}))} 
+                onSubmit={values => this.saveOrg(values)}
+              />), 'New Scratch Org', 'newScratch'
+            )}
           />
         </ButtonGroup>
         <Modal isOpen={this.state.modalOpen} title={this.state.modal.title} onRequestClose={() => this.setState({ modalOpen: false})}
               footer={[
                 <Button label="Cancel" onClick={() => this.setState({ modalOpen: false })} />,
-                <Button label="Save" type="submit" form={this.state.form}/> 
               ]}
         >
           {this.state.modal.body}
