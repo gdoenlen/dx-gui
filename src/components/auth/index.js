@@ -9,25 +9,21 @@ import {
   PageHeader,
   Modal
 } from '@salesforce/design-system-react';
-import sfdx from '../services/sfdx';
-import pubsub from '../services/pubsub';
+import sfdx from '../../services/sfdx';
+import pubsub from '../../services/pubsub';
+import { NewAuth } from './forms/newauth';
 
 /**
  * Authorization panel component
  */
-export default class Auth extends Component {
+export class Auth extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       modalOpen: false,
       auths: [],
-      form: {
-
-      }
     };
-
-    this.aliasChange = this.aliasChange.bind(this);
   }
 
   async componentDidMount() {
@@ -44,17 +40,6 @@ export default class Auth extends Component {
     });
   }
 
-  /**
-   * Handles the state change from the alias field on the new form.
-   * @param {event} event 
-   */
-  aliasChange(event) {
-    this.setState({
-      form: {
-        alias: event.currentTarget.value
-      }
-    });
-  }
   /**
    * Saves a new authorization
    * @param {string} alias - the alias you want the new authorization set to
@@ -107,19 +92,11 @@ export default class Auth extends Component {
           title="New DevHub" 
           onRequestClose={() => this.setState({ modalOpen: false })}
           footer={[
-            <Button label="Cancel" onClick={() => this.setState({ modalOpen: false})}/>,
-            <Button label="Save" onClick={() => this.saveAuth(this.state.form.alias)}/>
+            <Button label="Cancel" onClick={() => this.setState({ modalOpen: false})}/>
           ]}  
         >
           <section className="slds-p-around_large">
-            <div className="slds-form-element slds-m-bottom_large">
-              <label className="slds-form-element_label" htmlFor="alias">
-                Alias
-              </label>
-              <div className="slds-form-element_control">
-                <input id="alias" className="slds-input" type="text" onChange={(e) => this.aliasChange(e)} placeholder="Optional"/>
-              </div>
-            </div>
+            <NewAuth onSubmit={values => this.saveAuth(values.alias)} />
           </section>
         </Modal>
       </div>

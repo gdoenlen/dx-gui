@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import Auth from './components/auth';
+import { Auth } from './components/auth';
 import Waitable from './components/waitable';
 import Header from './components/header';
 import { BrowserRouter, Route } from 'react-router-dom';

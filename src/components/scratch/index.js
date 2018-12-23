@@ -54,20 +54,25 @@ export class Scratch extends Component {
     switch (action.value) {
       case 'open': this.open(item.username); break;
       case 'delete': this.delete(item.username); break;
-      case 'push': this.openModal((<PullPush id="push" onSubmit={() => alert('todo')} username={item.username}/>), 'Push Source', 'push'); break;
+      case 'push': 
+        this.openModal((<PullPush id="push" onSubmit={values => this.pushSource(values.username, values.projectDef)} username={item.username}/>), 'Push Source', 'push'); break;
       case 'pull': 
         this.openModal((<PullPush id="pull" onSubmit={values => this.pullSource(values.username, values.projectDef)} username={item.username}/>), 'Pull Source', 'pull'); break;
       default:
     }
   }
 
+  /**
+   * Pushes local source to the specified scratch org
+   * @param {string} username - username of the scratch org you want to push to
+   * @param {string} dir - path directory of your dx project 
+   * @returns {promise}
+   */
   async pushSource(username, dir) {
     pubsub.publish('loading', true);
     try {
-      const res = await sfdx.pushSource(username, dir);
-      console.log(res);
+      await sfdx.pushSource(username, dir);
     } catch (err) {
-      
       pubsub.publish('error', err);      
     } finally {
       this.setState({
@@ -77,11 +82,15 @@ export class Scratch extends Component {
     }
   }
 
+  /**
+   * Pulls source from the specified scratch org.
+   * @param {string} username - username of the scratch org you want to pull from
+   * @param {string} dir - path of the directory of your dx project 
+   */
   async pullSource(username, dir) {
     pubsub.publish('loading', true);
     try {
-      const res = await sfdx.pullSource(username, dir);
-      console.log(res);
+      await sfdx.pullSource(username, dir);
     } catch (err) {
       pubsub.publish('error', err);
     } finally {
@@ -104,6 +113,10 @@ export class Scratch extends Component {
     }
   }
 
+  /**
+   * Deletes a scratch org.
+   * @param {string} username - username of the scratch org you want to delete
+   */
   async delete(username) {
     try {
       const res = await sfdx.delete(username);
@@ -131,14 +144,14 @@ export class Scratch extends Component {
       //the response doesn't provide the info we need for the grid so we have to refresh
       const res = await this.getOrgs();
       this.setState({
-        orgs: res,
-        modalOpen: false
+        orgs: res
       });
     } catch (err) {
-      this.setState({ modalOpen: false });
       pubsub.publish('error', err);
+    } finally {
+      pubsub.publish('loading', false);
+      this.setState({ modalOpen: false });
     }
-    pubsub.publish('loading', false);
   }
 
   /**
