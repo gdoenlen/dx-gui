@@ -1,6 +1,6 @@
 //this only works when running from electron!!
 //todo polyfill this some how so we can work on the ui without electron
-const exec = window.require('child_process').exec;
+const exec = window.require && window.require('child_process').exec;
 const { chdir, cwd } = window.process; 
 
 /**
@@ -51,7 +51,7 @@ export class SfdxService {
    * @returns {promise}
    */
   async setAlias(username, alias) {
-    return this._exec(`sfdx force:alias:set ${alias}=${username}`);
+    return this._exec(`sfdx force:alias:set ${alias}=${username} --json`);
   }
 
   /**
@@ -84,12 +84,12 @@ export class SfdxService {
   
   /**
    * Creates a new scratch org 
-   * @param {string} auth - devhub username to create the scratch org with 
+   * @param {string} username - devhub username to create the scratch org with 
    * @param {string} scratchDef - path to the scratch definition
    * @param {string} alias - alias for the scratch org, optional 
    */
-  async newScratch(auth, scratchDef, alias) {
-    let cmd = `sfdx force:org:create -v ${auth} -f ${scratchDef} --json`;
+  async newScratch(username, scratchDef, alias) {
+    let cmd = `sfdx force:org:create -v ${username} -f ${scratchDef} --json`;
     if (alias) {
       cmd += ` -a ${alias}`;
     } 
