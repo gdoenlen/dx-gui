@@ -21,7 +21,7 @@ describe('subscribe', () => {
 });
 
 describe('publish', () => {
-  it('should fire all events with the data supplied', () => {
+  it('should fire all functions with the data supplied', () => {
     const mockFn = jest.fn();
     const mockFn2 = jest.fn();
     pubsub.subscribe('event', mockFn);
