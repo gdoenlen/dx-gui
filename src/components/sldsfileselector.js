@@ -19,12 +19,11 @@ export default class SLDSFileSelector extends Component {
    * @param {event} event - the event that triggered this to fire 
    */
   handleFileSelectorChange(event) {
-    const target = event.currentTarget;
-
     //sometimes when you click cancel there won't be a file value
-    if (target.files && target.files[0]) {
+    if (event && event.currentTarget && event.currentTarget.files && event.currentTarget.files[0]) {
+      const path = event.currentTarget.files[0].path;
       this.setState({
-        path: target.files[0].path
+        path: path
       });
 
       this.props.onChange(event);
