@@ -27,6 +27,9 @@ export class SfdxService {
    * @returns {promise}
    */
   async newAuth(alias) {
+    // todo we should time the promise out
+    // as it is possible that the user will never
+    // complete this action in the browser
     let cmd = 'sfdx force:auth:web:login --json';
     if (alias) {
       cmd += ` --setalias ${alias}`;

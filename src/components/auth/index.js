@@ -28,8 +28,13 @@ export class Auth extends Component {
 
   async componentDidMount() {
     pubsub.publish('loading', true);
-    await this.getOrgs();
-    pubsub.publish('loading', false);
+    try { 
+      await this.getOrgs();
+    } catch (err) {
+      pubsub.publish('error', err);
+    } finally {
+      pubsub.publish('loading', false);
+    }
   }
 
   async getOrgs() {
@@ -47,13 +52,19 @@ export class Auth extends Component {
   async saveAuth(alias) {
     try {
       const res = await sfdx.newAuth(alias);
+      // we only want to set loading to true here if
+      // the user completes a new auth
+      // if they don't the ui will actually become locked
+      // as sfdx is waiting on the callback from the browser
       if (res.status === 0) {
         pubsub.publish('loading', true);
         this.setState({ modalOpen: false });
-        this.getOrgs().then(() => pubsub.publish('loading', false));
+        await this.getOrgs();
       }
     } catch (err) {
       pubsub.publish('error', err);
+    } finally {
+      pubsub.publish('loading', false);
     }
   }
 

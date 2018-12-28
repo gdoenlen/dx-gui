@@ -9,6 +9,7 @@
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
     "formik": "^1.4.1",
+    "prop-types": "^15.6.2",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-router-dom": "^4.3.1",
