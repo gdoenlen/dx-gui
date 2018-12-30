@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import sfdx from '../../services/sfdx';
 import pubsub from '../../services/pubsub';
-import { ButtonGroup, Button, Modal, PageHeader, DataTable, DataTableColumn, DataTableRowActions, Dropdown } from '@salesforce/design-system-react';
+import { ButtonGroup, Button, Modal, PageHeader, DataTable, DataTableColumn, DataTableRowActions } from '@salesforce/design-system-react';
 import PullPush from './forms/pullpush';
 import NewScratch from './forms/newscratch';
 
@@ -62,10 +62,41 @@ export class Scratch extends Component {
       case 'open': this.open(item.username); break;
       case 'delete': this.delete(item.username); break;
       case 'push':
-        this.openModal((<PullPush id="push" onSubmit={values => sfdx.pushSource(values.username, values.projectDef)} username={item.username} />), 'Push Source', 'push'); break;
+        this.openModal((<PullPush id="push" onSubmit={values => this.push(values.username, values.projectDef)} username={item.username} />), 'Push Source', 'push'); break;
       case 'pull':
-        this.openModal((<PullPush id="pull" onSubmit={values => sfdx.pullSource(values.username, values.projectDef)} username={item.username} />), 'Pull Source', 'pull'); break;
+        this.openModal((<PullPush id="pull" onSubmit={values => this.pull(values.username, values.projectDef)} username={item.username} />), 'Pull Source', 'pull'); break;
       default:
+    }
+  }
+
+  async push(username, dir) {
+    pubsub.publish('loading', true);
+    try {
+      await sfdx.pushSource(username, dir);
+      return true;
+    } catch (err) {
+      pubsub.publish('error', err);
+      return false;
+    } finally {
+      pubsub.publish('loading', false);
+      this.setState({
+        modalOpen: false
+      });
+    }
+  }
+
+  async pull(username, dir) {
+    pubsub.publish('loading', true);
+    try {
+      await sfdx.pullSource(username, dir);
+      return true;
+    } catch (err) {
+      pubsub.publish('error', err);
+    } finally {
+      pubsub.publish('loading', false);
+      this.setState({
+        modalOpen: false
+      });
     }
   }
 
