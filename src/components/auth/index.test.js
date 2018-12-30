@@ -10,8 +10,8 @@ jest.mock('../../services/pubsub');
 
 function resetMocks(mock) {
   for (const prop in mock) {
-    if (prop && prop._isMockFunction) {
-      prop.mockReset();
+    if (mock[prop] && mock[prop]._isMockFunction) {
+      mock[prop].mockReset();
     }
   }
 }

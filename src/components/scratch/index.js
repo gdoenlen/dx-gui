@@ -23,11 +23,16 @@ export class Scratch extends Component {
 
   async componentDidMount() {
     pubsub.publish('loading', true);
-    const orgs = await this.getOrgs();
-    this.setState({
-      orgs: orgs
-    });
-    pubsub.publish('loading', false);
+    try {
+      const orgs = await this.getOrgs();
+      this.setState({
+        orgs: orgs
+      });
+    } catch (err) {
+      pubsub.publish('error', err);
+    } finally {
+      pubsub.publish('loading', false);
+    }
   }
 
   /**
@@ -54,10 +59,10 @@ export class Scratch extends Component {
     switch (action.value) {
       case 'open': this.open(item.username); break;
       case 'delete': this.delete(item.username); break;
-      case 'push': 
-        this.openModal((<PullPush id="push" onSubmit={values => this.pushSource(values.username, values.projectDef)} username={item.username}/>), 'Push Source', 'push'); break;
-      case 'pull': 
-        this.openModal((<PullPush id="pull" onSubmit={values => this.pullSource(values.username, values.projectDef)} username={item.username}/>), 'Pull Source', 'pull'); break;
+      case 'push':
+        this.openModal((<PullPush id="push" onSubmit={values => this.pushSource(values.username, values.projectDef)} username={item.username} />), 'Push Source', 'push'); break;
+      case 'pull':
+        this.openModal((<PullPush id="pull" onSubmit={values => this.pullSource(values.username, values.projectDef)} username={item.username} />), 'Pull Source', 'pull'); break;
       default:
     }
   }
@@ -73,7 +78,7 @@ export class Scratch extends Component {
     try {
       await sfdx.pushSource(username, dir);
     } catch (err) {
-      pubsub.publish('error', err);      
+      pubsub.publish('error', err);
     } finally {
       this.setState({
         modalOpen: false
@@ -180,21 +185,21 @@ export class Scratch extends Component {
     const navRight = (
       <React.Fragment>
         <ButtonGroup>
-          <Button 
-            variant="brand" 
+          <Button
+            variant="brand"
             label="New"
             onClick={() => this.openModal(
-              (<NewScratch 
-                options={this.state.orgs.nonScratchOrgs.map(nso => ({ value: nso.username, label: nso.username}))} 
+              (<NewScratch
+                options={this.state.orgs.nonScratchOrgs.map(nso => ({ value: nso.username, label: nso.username }))}
                 onSubmit={values => this.saveOrg(values)}
               />), 'New Scratch Org', 'newScratch'
             )}
           />
         </ButtonGroup>
-        <Modal isOpen={this.state.modalOpen} title={this.state.modal.title} onRequestClose={() => this.setState({ modalOpen: false})}
-              footer={[
-                <Button label="Cancel" onClick={() => this.setState({ modalOpen: false })} />,
-              ]}
+        <Modal isOpen={this.state.modalOpen} title={this.state.modal.title} onRequestClose={() => this.setState({ modalOpen: false })}
+          footer={[
+            <Button label="Cancel" onClick={() => this.setState({ modalOpen: false })} />,
+          ]}
         >
           {this.state.modal.body}
         </Modal>
@@ -203,9 +208,9 @@ export class Scratch extends Component {
 
     return (
       <React.Fragment>
-        <PageHeader 
+        <PageHeader
           label="Orgs"
-          title="Scratch Orgs" 
+          title="Scratch Orgs"
           info={this.state.orgs.scratchOrgs.length === 0 ? '#' : this.state.orgs.scratchOrgs.length.toString()}
           variant="objectHome"
           navRight={navRight}
@@ -215,11 +220,11 @@ export class Scratch extends Component {
             <DataTableColumn label="Alias" property="alias" />
             <DataTableColumn label="Org Id" property="orgId" />
             <DataTableColumn label="Org Name" property="orgName" />
-            <DataTableColumn label="Username" property="username"/>
+            <DataTableColumn label="Username" property="username" />
             <DataTableColumn label="DevHub Username" property="devHubUsername" />
             <DataTableColumn label="Status" property="status" />
             <DataTableColumn label="Expires" property="expirationDate" />
-            <DataTableRowActions 
+            <DataTableRowActions
               options={[
                 {
                   id: 0,
