@@ -221,7 +221,6 @@ export class Scratch extends Component {
                   value: 'delete'
                 }
               ]}
-              dropdown={<Dropdown length="5" />}
               onAction={(item, action) => this.handleRowAction(item, action)}
             />
           </DataTable>

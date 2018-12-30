@@ -1,7 +1,10 @@
 //this only works when running from electron!!
 //todo polyfill this some how so we can work on the ui without electron
 const exec = window.require && window.require('child_process').exec;
-const { chdir, cwd } = window.process; 
+const { chdir, cwd } = window.process || {
+  chdir: () => {},
+  cwd: () => {}
+}; 
 
 /**
  * Service to interact with the native sfdx binary.

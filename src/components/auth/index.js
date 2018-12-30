@@ -129,7 +129,6 @@ export class Auth extends Component {
                   value: 'delete'
                 }
               ]}
-              dropdown={<Dropdown length="5" iconCategory="utility" iconName="down"/>}
               onAction={(item, action) => this.handleRowAction(item, action)}
            />
           </DataTable>

@@ -16,7 +16,7 @@
     "react-scripts": "^2.1.2",
     "react-test-renderer": "^16.7.0"
   },
-  "homepage": "./",
+  "homepage": "/",
   "main": "main.js",
   "scripts": {
     "start": "react-scripts start",
