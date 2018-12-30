@@ -28,8 +28,10 @@ export class Scratch extends Component {
       this.setState({
         orgs: orgs
       });
+      return true;
     } catch (err) {
       pubsub.publish('error', err);
+      return false;
     } finally {
       pubsub.publish('loading', false);
     }
@@ -60,67 +62,32 @@ export class Scratch extends Component {
       case 'open': this.open(item.username); break;
       case 'delete': this.delete(item.username); break;
       case 'push':
-        this.openModal((<PullPush id="push" onSubmit={values => this.pushSource(values.username, values.projectDef)} username={item.username} />), 'Push Source', 'push'); break;
+        this.openModal((<PullPush id="push" onSubmit={values => sfdx.pushSource(values.username, values.projectDef)} username={item.username} />), 'Push Source', 'push'); break;
       case 'pull':
-        this.openModal((<PullPush id="pull" onSubmit={values => this.pullSource(values.username, values.projectDef)} username={item.username} />), 'Pull Source', 'pull'); break;
+        this.openModal((<PullPush id="pull" onSubmit={values => sfdx.pullSource(values.username, values.projectDef)} username={item.username} />), 'Pull Source', 'pull'); break;
       default:
-    }
-  }
-
-  /**
-   * Pushes local source to the specified scratch org
-   * @param {string} username - username of the scratch org you want to push to
-   * @param {string} dir - path directory of your dx project 
-   * @returns {promise}
-   */
-  async pushSource(username, dir) {
-    pubsub.publish('loading', true);
-    try {
-      await sfdx.pushSource(username, dir);
-    } catch (err) {
-      pubsub.publish('error', err);
-    } finally {
-      this.setState({
-        modalOpen: false
-      });
-      pubsub.publish('loading', false);
-    }
-  }
-
-  /**
-   * Pulls source from the specified scratch org.
-   * @param {string} username - username of the scratch org you want to pull from
-   * @param {string} dir - path of the directory of your dx project 
-   */
-  async pullSource(username, dir) {
-    pubsub.publish('loading', true);
-    try {
-      await sfdx.pullSource(username, dir);
-    } catch (err) {
-      pubsub.publish('error', err);
-    } finally {
-      this.setState({
-        modalOpen: false
-      });
-      pubsub.publish('loading', false);
     }
   }
 
   /**
    * opens a scratch org
    * @param {string} username - username of the scratch org we want to open
+   * @returns {boolean} true or false if the operation succeeded 
    */
   async open(username) {
     try {
       await sfdx.openOrg(username);
+      return true;
     } catch (err) {
       pubsub.publish('error', err);
+      return false;
     }
   }
 
   /**
    * Deletes a scratch org.
    * @param {string} username - username of the scratch org you want to delete
+   * @returns {boolean} - true or false if the operation succeeded or not
    */
   async delete(username) {
     try {
@@ -132,27 +99,34 @@ export class Scratch extends Component {
           orgs: orgs
         };
       });
+      return true;
     } catch (err) {
       pubsub.publish('error', err);
+      return false;
     }
   }
 
   /**
    * Creates a new scratch org from the modal form.
    * This is a long action due to the multiple calls that have to be made to sfdx.
-   * @param {object} form 
+   * @param {object} form
+   * @returns {boolean} true or false on succession
    */
   async saveOrg(form) {
     try {
       pubsub.publish('loading', true);
       await sfdx.newScratch(form.auth, form.file, form.alias);
+
       //the response doesn't provide the info we need for the grid so we have to refresh
       const res = await this.getOrgs();
       this.setState({
         orgs: res
       });
+
+      return true;
     } catch (err) {
       pubsub.publish('error', err);
+      return false;
     } finally {
       pubsub.publish('loading', false);
       this.setState({ modalOpen: false });
@@ -163,8 +137,8 @@ export class Scratch extends Component {
    * Opens the modal with the content supplied
    * 
    * @param {component} form - component body for the modal form 
-   * @param {*} title - title of the modal
-   * @param {*} formName - id of the form for the save submit button
+   * @param {string} title - title of the modal
+   * @param {string} formName - id of the form for the save submit button
    */
   openModal(form, title, formName) {
     this.setState({

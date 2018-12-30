@@ -13,7 +13,6 @@ export default class NewScratch extends Component {
             auth: this.props.options[0].value
           }}
           validate={values => {
-            console.log(values);
             const err = {};
             if (!values.file) {
               err.file = 'Required';

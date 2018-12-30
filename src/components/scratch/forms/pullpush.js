@@ -2,8 +2,28 @@ import React, { Component } from 'react';
 import { Formik, Form, Field } from 'formik';
 import SLDSFileSelector from '../../sldsfileselector';
 import { Button } from '@salesforce/design-system-react';
+import pubsub from '../../../services/pubsub';
 
 export default class PullPush extends Component {
+  
+  /**
+   * Handles the 7
+   * @param {object} values - the form values from formik
+   * @returns {boolean} - true or false depending on if an error was caught or not
+   */
+  async handleSubmit(values) {
+    pubsub.publish('loading', true);
+    try {
+      await this.props.onSubmit(values);
+      return true
+    } catch (err) {
+      pubsub.publish('error', err);
+      return false;
+    } finally {
+      pubsub.publish('loading', false);
+    }
+  }
+
   render() {
     return (
       <React.Fragment>
@@ -19,7 +39,7 @@ export default class PullPush extends Component {
               };
             }
           }}
-          onSubmit={this.props.onSubmit}
+          onSubmit={this.handleSubmit}
         >
           {() => (
             <Form id={this.props.id} className="slds-form slds-form_stacked">
