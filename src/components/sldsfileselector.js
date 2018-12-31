@@ -78,7 +78,7 @@ SLDSFileSelector.propTypes = {
   accept: PropTypes.string,
 
   /** label for the form element */
-  label: PropTypes.label.isRequired  
+  label: PropTypes.string.isRequired  
 };
 
 SLDSFileSelector.defaultProps = {
