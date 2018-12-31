@@ -7,12 +7,15 @@ import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import { Scratch } from './components/scratch';
 import GlobalErrModal from './components/globalerrmodal';
 import { IconSettings } from '@salesforce/design-system-react';
+const electron = window.require && window.require('electron');
 
 export default class App extends Component {
   render() {
     return (
       <React.Fragment>
-        <IconSettings iconPath={process.env.PUBLIC_URL + '/icons'}>
+        <IconSettings 
+          iconPath={electron ? electron.remote.app.getAppPath() + '/icons' : '/icons'}
+        >
           <BrowserRouter>
             <div>
               <Header />

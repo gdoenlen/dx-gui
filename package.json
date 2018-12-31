@@ -19,11 +19,12 @@
   "homepage": "./",
   "main": "main.js",
   "scripts": {
-    "start": "react-scripts start",
+    "start": "export NODE_ENV=development && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "electron": "electron ."
+    "electron": "electron .",
+    "pkg": "export NODE_ENV=production && npx electron-packager build dxgui"
   },
   "eslintConfig": {
     "extends": "react-app"
