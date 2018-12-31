@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .vscode/
+
+# build folders
+dxgui-linux-x64/
