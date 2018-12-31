@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { Input, Button } from '@salesforce/design-system-react';
+import PropTypes from 'prop-types';
 
 /**
  * Form for when you want to create a new devhub/authorization
@@ -29,3 +30,8 @@ export class NewAuth extends Component {
     );
   }
 }
+
+NewAuth.propTypes = {
+  /** onSubmit function for the form */
+  onSubmit: PropTypes.func.isRequired,
+};

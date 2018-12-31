@@ -3,7 +3,11 @@ import { Formik, Field, Form } from 'formik';
 import SLDSSelect from '../../sldsselect';
 import { Input, Button } from '@salesforce/design-system-react';
 import SLDSFileSelector from '../../sldsfileselector';
+import PropTypes from 'prop-types';
 
+/**
+ * Form for creating a new scratch org
+ */
 export default class NewScratch extends Component {
   render() {
     return (
@@ -65,3 +69,11 @@ export default class NewScratch extends Component {
     );
   }
 }
+
+NewScratch.propTypes = {
+  /** array of objects with value/label fields */
+  options: PropTypes.array.isRequired,
+
+  /** onSubmit function for the form */
+  onSubmit: PropTypes.func.isRequired,
+};

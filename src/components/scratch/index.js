@@ -5,6 +5,9 @@ import { ButtonGroup, Button, Modal, PageHeader, DataTable, DataTableColumn, Dat
 import PullPush from './forms/pullpush';
 import NewScratch from './forms/newscratch';
 
+/**
+ * The Main Scratch org page
+ */
 export class Scratch extends Component {
 
   constructor(props) {

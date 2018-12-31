@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { Formik, Form, Field } from 'formik';
 import SLDSFileSelector from '../../sldsfileselector';
 import { Button } from '@salesforce/design-system-react';
+import PropTypes from 'prop-types';
 
+/**
+ * Form for pulling or pushing from a scratch org.
+ */
 export default class PullPush extends Component {
   render() {
     return (
@@ -42,3 +46,17 @@ export default class PullPush extends Component {
     );
   }
 }
+
+PullPush.propTypes = {
+  /** The default value for the username for the form */
+  username: PropTypes.string.isRequired,
+
+  /** The function to be called when the form is submitted */
+  onSubmit: PropTypes.func.isRequired,
+
+  /** 
+   * Id of the form element, this will be used when we move the
+   * submit button outside of the form
+   */
+  id: PropTypes.string.isRequired,
+};

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Salesforce Lightning Design System file upload component
@@ -62,3 +63,24 @@ export default class SLDSFileSelector extends Component {
     );
   }
 }
+
+SLDSFileSelector.propTypes = {
+  /** Any error message that needs to be displayed */
+  error: PropTypes.string,
+
+  /** webkitdirectory prop for the input */
+  webkitdirectory: PropTypes.bool,
+
+  /** name prop of the input */
+  name: PropTypes.string,
+
+  /** accept prop of the input */
+  accept: PropTypes.string,
+
+  /** label for the form element */
+  label: PropTypes.label.isRequired  
+};
+
+SLDSFileSelector.defaultProps = {
+  webkitdirectory: false
+};

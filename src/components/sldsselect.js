@@ -1,5 +1,9 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
+/**
+ * SLDS Select element
+ */
 export default class SLDSSelect extends Component {
   render() {
     return (
@@ -15,3 +19,17 @@ export default class SLDSSelect extends Component {
     );
   }
 }
+
+SLDSSelect.propTypes = {
+  /** onChange function for the select element */
+  onChange: PropTypes.func.isRequired,
+
+  /** name prop for the select element */
+  name: PropTypes.string.isRequired,
+
+  /** Array of objects with value/label for the option elements */
+  options: PropTypes.array.isRequired,
+
+  /** any error message to be displayed */
+  error: PropTypes.string
+};

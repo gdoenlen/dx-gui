@@ -5,7 +5,6 @@ import {
   DataTable,
   DataTableColumn,
   DataTableRowActions,
-  Dropdown,
   PageHeader,
   Modal
 } from '@salesforce/design-system-react';

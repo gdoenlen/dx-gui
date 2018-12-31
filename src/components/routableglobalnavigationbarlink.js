@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
 /**
  * Navigation bar link meant to mimic the GlobalNavigationBarLink from the react design system.
@@ -16,3 +17,11 @@ export default class RoutableGlobalNavigationBarLink extends Component {
     );
   }
 }
+
+RoutableGlobalNavigationBarLink.propTypes = {
+  /** path for the router NavLink `to` prop */
+  href: PropTypes.string.isRequired,
+
+  /** label for the link element */
+  label: PropTypes.string.isRequired
+};
