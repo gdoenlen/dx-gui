@@ -6,7 +6,8 @@ let win;
 
 function init() {
   win = new BrowserWindow({ width: 1000, height: 600 });
-  win.loadURL(getLoadUrl());
+  const url = getLoadUrl();
+  win.loadURL(url);
   win.on('closed', () => {
     win = null;
   });
@@ -14,8 +15,8 @@ function init() {
 
 function getLoadUrl() {
   return process.env.NODE_ENV === 'production' ? url.format({
-    pathname: path.join(__dirname, '/../build/index.html'),
-    protocol: 'file:',
+    pathname: path.join(__dirname, '/build/index.html'),
+    protocol: 'file',
     slashes: true
   }) : 'http://localhost:3000/';
 }

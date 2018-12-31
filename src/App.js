@@ -3,7 +3,7 @@ import './App.css';
 import { Auth } from './components/auth';
 import Waitable from './components/waitable';
 import Header from './components/header';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Redirect } from 'react-router-dom';
 import { Scratch } from './components/scratch';
 import GlobalErrModal from './components/globalerrmodal';
 import { IconSettings } from '@salesforce/design-system-react';
@@ -22,6 +22,7 @@ export default class App extends Component {
                 <Route path="/devhubs" component={() => <Auth />} />
                 <Route path="/scratch" component={() => <Scratch />} />
               </Waitable>
+              {window.location.pathname.endsWith('index.html') && <Redirect to="/" />}
             </div>
           </BrowserRouter>
         </IconSettings>
