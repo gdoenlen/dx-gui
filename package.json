@@ -20,7 +20,7 @@
   "main": "main.js",
   "scripts": {
     "start": "export NODE_ENV=development && react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cp main.js build && cp package.json build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron .",
