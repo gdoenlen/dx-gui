@@ -7,7 +7,7 @@ cache:
     - node_modules/
 
 variables:
-  CI: true
+  CI: "true"
   NODE_ENV: test
 
 stages: 
