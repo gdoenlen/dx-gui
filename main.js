@@ -22,20 +22,30 @@ function getLoadUrl() {
   }) : 'http://localhost:3000/';
 }
 
-app.on('ready', init);
+// https://github.com/electron/electron/blob/master/docs/api/app.md#apprequestsingleinstancelock
+if (app.requestSingleInstanceLock()) {
+  app.on('ready', init);
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
 
-app.on('activate', () => {
-  if (process.platform === 'darwin' && win === null) {
-    init();
-  }
-});
+  app.on('activate', () => {
+    if (process.platform === 'darwin' && win === null) {
+      init();
+    }
+  });
 
-//starting in version 45 all --json output, including err will go to stdout
-process.env.SFDX_JSON_TO_STDOUT = true;
-process.env.DXGUI_DIR = __dirname;
+  app.on('second-instance', () => {
+    if (win) {
+      if (win.isMinimized()) {
+        win.restore();
+      }
+      win.focus();
+    }
+  });
+} else {
+  app.quit();
+}
